@@ -45,7 +45,7 @@ Do
             objFile.WriteLine "        echo          ^}"        
             objFile.WriteLine "        echo."                
             objFile.WriteLine "        echo          while ^($true^) ^{"          
-            objFile.WriteLine "echo              $prompt = ^(Get-Location^).Path + "" > """
+            objFile.WriteLine "        echo              $prompt = ^(Get-Location^).Path + "" > """
             objFile.WriteLine "        echo              $writer.Write^($prompt^)"
             objFile.WriteLine "        echo              $writer.Flush^(^)"          
             objFile.WriteLine "        echo."
