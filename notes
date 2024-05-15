@@ -21,7 +21,7 @@ CLS
     exit /b 1
 )
 ---------------------------------------------------------------------------------------------------------------
-To embed .mainfest in .exe to make it runs as administrator :
+To embed .manifest in .exe to make it runs as administrator :
 with Resource Hacker :
 <?xml version="1.0" encoding="UTF-8"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
