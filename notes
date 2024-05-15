@@ -2,7 +2,16 @@ powershell Set-MpPreference -ExclusionPath <path> with administrator privs
 to verify it was excluded :
 powershell -c "Get-MpPreference | Select-Object -ExpandProperty ExclusionPath"
 ---------------------------------------------------------------------------------------------------------------
-net localgroup Administrators /add <username> with administrator privs
+with administrator privs 
+To create user and set to localgroup administrators :
+net user Default 123 /add
+net localgroup Administrators Default /add
+To disable UAC :
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 0 /f
+TO verify it's disabled :
+reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA
+To enable it again :
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 1 /f
 ---------------------------------------------------------------------------------------------------------------
 checking administrator privs in run.bat
 CLS
